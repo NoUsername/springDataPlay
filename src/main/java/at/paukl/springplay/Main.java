@@ -1,7 +1,7 @@
 package at.paukl.springplay;
 
 import at.paukl.springplay.beans.DbTest;
-import at.paukl.springplay.domain.TestEntity;
+import at.paukl.springplay.domain.EntityWithConverter;
 import org.slf4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -18,7 +18,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Configuration
 @EnableJpaRepositories
 @SpringBootApplication
-@ComponentScan(basePackageClasses = {DbTest.class, TestEntity.class})
+@ComponentScan(basePackageClasses = {DbTest.class, EntityWithConverter.class})
 @EnableAutoConfiguration
 @EnableTransactionManagement(proxyTargetClass = true, mode = AdviceMode.PROXY)
 public class Main {
@@ -30,10 +30,8 @@ public class Main {
 
         LOG.info("saving...");
         dbTest.saveEntity("hello");
-        dbTest.saveEntity("there");
         LOG.info("loading...");
-        dbTest.showAll();
+        dbTest.loadAndRecreateDto();
         LOG.info("done");
-
     }
 }
