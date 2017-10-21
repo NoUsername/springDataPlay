@@ -13,6 +13,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Configuration
@@ -29,10 +34,13 @@ public class Main {
         final DbTest dbTest = ctx.getBeansOfType(DbTest.class).values().iterator().next();
 
         LOG.info("saving...");
-        dbTest.saveEntity("hello");
-        dbTest.saveEntity("there");
+        final ArrayList<Long> ids = new ArrayList<>();
+        for (String name : Arrays.asList("foo", "bar", "baz", "bazing", "bazinga", "blub", "blubbi", "blubbedi")) {
+            ids.add(dbTest.saveEntityWithChild(name));
+        }
         LOG.info("loading...");
-        dbTest.showAll();
+        final List<String> names = dbTest.loadAllByIds(ids);
+        LOG.info("found names: {}", names.stream().collect(Collectors.joining(", ")));
         LOG.info("done");
 
     }
