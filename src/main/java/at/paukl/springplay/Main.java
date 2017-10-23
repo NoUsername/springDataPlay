@@ -38,7 +38,7 @@ public class Main {
         for (String name : Arrays.asList("foo", "bar", "baz", "bazing", "bazinga", "blub", "blubbi", "blubbedi")) {
             ids.add(dbTest.saveEntityWithChild(name));
         }
-        LOG.info("loading...");
+        LOG.info("Testing lazy loading with Hibernate version {} ...", org.hibernate.Version.getVersionString());
         final List<String> names = dbTest.loadAllByIds(ids);
         LOG.info("found names: {}", names.stream().collect(Collectors.joining(", ")));
         LOG.info("done");

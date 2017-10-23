@@ -2,8 +2,8 @@ package at.paukl.springplay.domain;
 
 import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
-import org.hibernate.bytecode.internal.javassist.FieldHandled;
-import org.hibernate.bytecode.internal.javassist.FieldHandler;
+import org.hibernate.engine.spi.PersistentAttributeInterceptable;
+import org.hibernate.engine.spi.PersistentAttributeInterceptor;
 import org.slf4j.Logger;
 
 import javax.persistence.*;
@@ -14,13 +14,12 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author Paul Klingelhuber
  */
 @Entity
-public class TestEntity implements FieldHandled {
+public class TestEntity implements PersistentAttributeInterceptable {
     private static final Logger LOG = getLogger(TestEntity.class);
 
     private Long id;
     private String name;
     private TestChildEntity testChildEntity;
-    private FieldHandler fieldHandler;
 
     public TestEntity() {
         LOG.debug("TestEntity created");
@@ -48,15 +47,15 @@ public class TestEntity implements FieldHandled {
     @OneToOne(fetch = FetchType.LAZY, optional = true, mappedBy = "parent")
     @LazyToOne(LazyToOneOption.NO_PROXY)
     public TestChildEntity getTestChildEntity() {
-        if (fieldHandler != null) {
-            return (TestChildEntity) fieldHandler.readObject(this, "testChildEntity", testChildEntity);
+        if (interceptor != null) {
+            return (TestChildEntity) interceptor.readObject(this, "testChildEntity", testChildEntity);
         }
         return testChildEntity;
     }
 
     public void setTestChildEntity(TestChildEntity testChildEntity) {
-        if (fieldHandler != null) {
-            this.testChildEntity = (TestChildEntity) fieldHandler.writeObject(this, "testChildEntity", this.testChildEntity, testChildEntity);
+        if (interceptor != null) {
+            this.testChildEntity = (TestChildEntity) interceptor.writeObject(this, "testChildEntity", this.testChildEntity, testChildEntity);
             return;
         }
         this.testChildEntity = testChildEntity;
@@ -70,13 +69,15 @@ public class TestEntity implements FieldHandled {
                 '}';
     }
 
+    private PersistentAttributeInterceptor interceptor;
+
     @Override
-    public void setFieldHandler(FieldHandler handler) {
-        this.fieldHandler = handler;
+    public PersistentAttributeInterceptor $$_hibernate_getInterceptor() {
+        return this.interceptor;
     }
 
     @Override
-    public FieldHandler getFieldHandler() {
-        return fieldHandler;
+    public void $$_hibernate_setInterceptor(PersistentAttributeInterceptor interceptor) {
+        this.interceptor = interceptor;
     }
 }
